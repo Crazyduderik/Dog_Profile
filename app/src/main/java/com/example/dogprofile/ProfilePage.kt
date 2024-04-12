@@ -44,24 +44,28 @@ fun ProfilePage(){
         Text(text = "Germany")
 
         Row(horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.fillMaxSize().padding(16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "303", fontWeight = FontWeight.Bold)
-                Text(text = "Followers")
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "90", fontWeight = FontWeight.Bold)
-                Text(text = "Following")
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "30", fontWeight = FontWeight.Bold)
-                Text(text = "Posts")
-            }
+            ProfileStats(count = "5000", title = "Followers")
+            
+            ProfileStats(count = "400", title = "Following")
+
+            ProfileStats(count = "120", title = "Posts")
         }
 
     }
 }
+
+@Composable
+fun ProfileStats(count: String, title: String){
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = count, fontWeight = FontWeight.Bold)
+        Text(text = title)
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable
