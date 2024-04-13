@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
 
 @Composable
 fun ProfilePage(){
@@ -49,7 +50,7 @@ fun ProfilePage(){
                 portraitConstraints(margin = 16.dp)
             }else{
                 // call landscape constraints
-                portraitConstraints(margin = 16.dp)
+                landscapeConstraints(margin = 16.dp)
             }
             // Content of card : Including dog image, Description, Follower, etc
             ConstraintLayout(constraints){
@@ -62,7 +63,8 @@ fun ProfilePage(){
                         .border(
                             width = 2.dp,
                             color = Color.Magenta,
-                            shape = CircleShape)
+                            shape = CircleShape
+                        )
                         .layoutId("image"),
                     // crop image
                     contentScale = ContentScale.Crop
@@ -149,6 +151,43 @@ private fun portraitConstraints(margin:Dp): ConstraintSet{
         constrain(rowButton){
             top.linkTo(rowStats.bottom)
         }
+    }
+}
+
+private fun landscapeConstraints(margin: Dp): ConstraintSet{
+    return ConstraintSet{
+        val image = createRefFor("image")
+        val nameText = createRefFor("nameText")
+        val originText= createRefFor("originText")
+        val rowStats = createRefFor("rowStats")
+        val rowButton = createRefFor("rowButton")
+
+        constrain(image){
+            top.linkTo(parent.top, margin= margin)
+            start.linkTo(parent.start,margin = margin)
+        }
+        constrain(nameText){
+            start.linkTo(image.start)
+            top.linkTo(image.bottom)
+        }
+        constrain(originText){
+            top.linkTo(nameText.bottom)
+            start.linkTo(nameText.start)
+            end.linkTo(parent.end)
+        }
+        constrain(rowStats){
+            top.linkTo(image.top)
+            start.linkTo(image.end, margin = margin)
+            end.linkTo(parent.end)
+        }
+        constrain(rowButton){
+            top.linkTo(rowStats.bottom, margin = 16.dp)
+            start.linkTo(rowStats.start)
+            end.linkTo(parent.end)
+            width = Dimension.wrapContent
+
+        }
+
     }
 }
 
