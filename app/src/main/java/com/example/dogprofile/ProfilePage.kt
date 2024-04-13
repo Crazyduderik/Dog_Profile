@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
 
 @Composable
 fun ProfilePage(){
@@ -40,73 +43,65 @@ fun ProfilePage(){
         .padding(top = 100.dp, bottom = 100.dp, start = 16.dp, end = 16.dp)
         .border(width = 2.dp, color = Color.White, shape = RoundedCornerShape(30.dp))
     ) {
-        // Content of card : Including dog image, Description, Follower, etc
-        ConstraintLayout{
-            val (image, nameText, originText, rowStats, rowButton) = createRefs()
 
-            Image(painter = painterResource(id = R.drawable.doberman),
-                contentDescription = "doberman",
-                modifier = Modifier
-                    .padding(top = 46.dp)
-                    .size(200.dp)
-                    .clip(CircleShape)
-                    .border(
-                        width = 2.dp,
-                        color = Color.Red,
-                        shape = CircleShape
-                        // when using constraint as we must define how something is positioned
-                    ).constrainAs(image){
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    },
-
-                // crop image
-                contentScale = ContentScale.Crop
-
-            )
-            Text(text = "Doberman",
-                modifier = Modifier.constrainAs(nameText){
-                    top.linkTo(image.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-                )
-            Text(text = "Germany",
-                modifier = Modifier.constrainAs(originText){
-                    top.linkTo(nameText.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-                )
-
-            Row(horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .constrainAs(rowStats){
-                        top.linkTo(originText.bottom)
-                    }
-            ) {
-                ProfileStats(count = "5000", title = "Followers")
-
-                ProfileStats(count = "400", title = "Following")
-
-                ProfileStats(count = "120", title = "Posts")
+        BoxWithConstraints {
+            val constraints = if(minWidth < 600.dp){
+                portraitConstraints(margin = 16.dp)
+            }else{
+                // call landscape constraints
+                portraitConstraints(margin = 16.dp)
             }
-            Row(horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp)
-                    .constrainAs(rowButton){
-                        top.linkTo(rowStats.bottom)
-                    }
-            ){
-                ProfileButton(title = "Follow User")
+            // Content of card : Including dog image, Description, Follower, etc
+            ConstraintLayout(constraints){
+                Image(painter = painterResource(id = R.drawable.doberman),
+                    contentDescription = "doberman",
+                    modifier = Modifier
+                        .padding(top = 46.dp)
+                        .size(200.dp)
+                        .clip(CircleShape)
+                        .border(
+                            width = 2.dp,
+                            color = Color.Magenta,
+                            shape = CircleShape)
+                        .layoutId("image"),
+                    // crop image
+                    contentScale = ContentScale.Crop
 
-                ProfileButton(title = "Message User")
+                )
+                Text(text = "Doberman",
+                    Modifier.layoutId("nameText")
+                )
+                Text(text = "Germany",
+                    Modifier.layoutId("originText")
+                )
+
+                Row(horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .layoutId("rowStats")
+
+                ) {
+                    ProfileStats(count = "5000", title = "Followers")
+
+                    ProfileStats(count = "400", title = "Following")
+
+                    ProfileStats(count = "120", title = "Posts")
+                }
+                Row(horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
+                        .layoutId("rowButton")
+
+                ){
+                    ProfileButton(title = "Follow User")
+
+                    ProfileButton(title = "Message User")
+                }
             }
         }
+
     }
 }
 
@@ -125,6 +120,37 @@ fun ProfileButton(title:String){
     }
 }
 
+
+private fun portraitConstraints(margin:Dp): ConstraintSet{
+    return ConstraintSet{
+        val image = createRefFor("image")
+        val nameText = createRefFor("nameText")
+        val originText= createRefFor("originText")
+        val rowStats = createRefFor("rowStats")
+        val rowButton = createRefFor("rowButton")
+        constrain(image){
+            top.linkTo(parent.top)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+        constrain(nameText){
+            top.linkTo(image.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+        constrain(originText){
+            top.linkTo(nameText.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+        constrain(rowStats){
+            top.linkTo(originText.bottom)
+        }
+        constrain(rowButton){
+            top.linkTo(rowStats.bottom)
+        }
+    }
+}
 
 
 @Preview(showBackground = true)
